@@ -1,19 +1,21 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
-import { Button } from "reactstrap";
+import React, { useState, useEffect, useRef } from "react";
+
 import {
   addData,
   deleteData,
   editData,
   fetchData,
   fetchOne,
-} from "./apiServices";
+} from "./services/apiServices";
+
 import MyModal from "./components/myModal";
-import MySpinner from "./components/mySpinner";
-import "./App.css";
-import { titleContext } from ".";
+import MyNav from "./components/myNav";
+import MyLists from "./components/myList";
+import MyModify from "./components/myModify";
+
+import "./style/App.css";
 
 function App() {
-  const title = useContext(titleContext);
   const [margin, setMargin] = useState("0px");
   const [lists, setLists] = useState({ status: false, data: [] });
   const [list, setList] = useState({});
@@ -28,11 +30,13 @@ function App() {
     cancel: false,
     update: null,
   });
+
   const textRef = useRef();
 
   const toggle = () => {
     setOverlay({ modal: !overlay.modal });
   };
+
   const checkNote = async (e) => {
     e.preventDefault();
     setLoading({ ...loading, cancel: true });
@@ -45,116 +49,82 @@ function App() {
       setOverlay({ modify: false });
     }
   };
+
+  const baseList = async (start, end, update, overlay, api) => {
+    setLoading(start);
+    var response = await api;
+    if (response !== "failed") {
+      setLoading(end);
+      if (update !== false) {
+        setLoading({ ...loading, update: response });
+      }
+      setOverlay(overlay);
+    }
+  };
+
   const editList = async (e) => {
     e.preventDefault();
-    setLoading({ ...loading, edit: true });
-    var editResponse = await editData(list.id, list.text);
-    if (editResponse !== "failed") {
-      setLoading({ ...loading, edit: false });
-      setOverlay({ modify: false });
-    }
+    baseList(
+      { ...loading, edit: true },
+      { ...loading, edit: false },
+      false,
+      { modify: false },
+      editData(list.id, list.text)
+    );
   };
+
   const deleteList = async (e) => {
     e.preventDefault();
-    setLoading({ ...loading, delete: true });
-    var deleteResponse = await deleteData(list.id);
-    if (deleteResponse !== "failed") {
-      setLoading({ ...loading, delete: false });
-      setOverlay({ modify: false });
-      setLoading({ ...loading, update: deleteResponse });
-    }
+    baseList(
+      { ...loading, delete: true },
+      { ...loading, delete: false },
+      true,
+      { modify: false },
+      deleteData(list.id)
+    );
   };
+
   const addList = async (e) => {
     e.preventDefault();
-    setLoading({ ...loading, add: true });
-    var addResponse = await addData(textRef.current.value);
-    if (addResponse !== "failed") {
-      setLoading({ ...loading, add: false });
-      setLoading({ ...loading, update: addResponse });
-      setOverlay({ modal: false });
-    }
+    baseList(
+      { ...loading, add: true },
+      { ...loading, add: false },
+      true,
+      { modal: false },
+      addData(textRef.current.value)
+    );
   };
+
   const fetchLists = async () => {
     var data = await fetchData();
     return data;
   };
+
   useEffect(() => {
     setLists({ status: false, data: [] });
     fetchLists().then((data) => {
       setLists({ status: true, data: data });
     });
   }, [loading.update]);
+
   return (
     <div>
-      <nav className="navbar navbar-dark bg-dark">
-        <span
-          className="navbar-text"
-          style={{ fontSize: "48", fontWeight: "bold" }}
-        >
-          {title}
-        </span>
-        {overlay.modify ? (
-          <Button color="warning" className="text-white" onClick={checkNote}>
-            {loading.cancel ? <MySpinner /> : "Cancel"}
-          </Button>
-        ) : (
-          <Button color="success" onClick={toggle}>
-            Add List
-          </Button>
-        )}
-      </nav>
-      <ul
-        className="list-group list-group-flush"
-        style={{ marginBottom: margin }}
-      >
-        {lists.data.length === 0 ? (
-          lists.status === false ? (
-            <div className="middle">
-              <div className="spinner-border" role="status">
-                <span className="sr-only">Loading...</span>
-              </div>
-            </div>
-          ) : (
-            <div className="middle">empty list</div>
-          )
-        ) : (
-          lists.data.map((value, index) => {
-            return (
-              <li
-                key={index}
-                style={{ cursor: "pointer", fontSize: "18px" }}
-                className="list-group-item bg-light text-dark"
-                suppressContentEditableWarning={true}
-                contentEditable={true}
-                placeholder="Double click for deleting"
-                onFocus={(e) => {
-                  e.preventDefault();
-                  setOverlay({ modify: true });
-                  setList({
-                    id: value._id,
-                    text: e.target.innerText,
-                  });
-                  setMargin("60px");
-                }}
-                onBlur={(e) => {
-                  e.preventDefault();
-                  setList({
-                    id: value._id,
-                    text: e.target.innerText,
-                  });
-                }}
-                data-toggle="tooltip"
-                data-placement="top"
-                title="Tooltip on top"
-                data-animation={false}
-                data-container={true}
-              >
-                {value.name}
-              </li>
-            );
-          })
-        )}
-      </ul>
+      <MyNav
+        modify={overlay.modify}
+        checkNote={checkNote}
+        cancel={loading.cancel}
+        toggle={toggle}
+      />
+
+      <MyLists
+        length={lists.data.length}
+        lists={lists.data}
+        margin={margin}
+        setList={setList}
+        setMargin={setMargin}
+        setOverlay={setOverlay}
+        status={lists.status}
+      />
 
       <MyModal
         isOpen={overlay.modal}
@@ -172,22 +142,13 @@ function App() {
         loading={loading.add}
       />
 
-      {overlay.modify ? (
-        <div style={{ backgroundColor: "gray" }}>
-          <div className="bg.dark row justify-content-center modify">
-            <div className="col-5">
-              <Button color="danger" block onClick={deleteList}>
-                {loading.delete ? <MySpinner /> : <div>Delete</div>}
-              </Button>
-            </div>
-            <div className="col-5">
-              <Button color="primary" block onClick={editList}>
-                {loading.edit ? <MySpinner /> : "Edit"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <MyModify
+        deleteList={deleteList}
+        editList={editList}
+        loadingDelete={loading.delete}
+        loadingEdit={loading.edit}
+        modify={overlay.modify}
+      />
     </div>
   );
 }

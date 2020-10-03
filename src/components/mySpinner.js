@@ -1,14 +1,15 @@
 import React from "react";
 import { Spinner } from "reactstrap";
 
-function MySpinner() {
+function MySpinner({ size }) {
+  const _size = size ?? "sm";
   return (
     <div>
       <Spinner
         className="white"
         as="span"
         animation="grow"
-        size="sm"
+        size={_size}
         role="status"
         aria-hidden="true"
       />
