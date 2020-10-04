@@ -10,6 +10,10 @@ function myList({
   setList,
   setMargin,
 }) {
+  const preventEvent = () => {
+    window.addEventListener("touchmove", null);
+    window.addEventListener("mousewheel", null);
+  };
   return (
     <div>
       <ul
@@ -38,8 +42,7 @@ function myList({
                 contentEditable={true}
                 placeholder="Double click for deleting"
                 onFocus={(e) => {
-                  window.addEventListener("touchmove", null);
-                  window.addEventListener("mousewheel", null);
+                  preventEvent();
                   setOverlay({ modify: true });
                   setList({
                     id: value._id,
@@ -48,8 +51,7 @@ function myList({
                   setMargin("60px");
                 }}
                 onBlur={(e) => {
-                  window.addEventListener("touchmove", null);
-                  window.addEventListener("mousewheel", null);
+                  preventEvent();
                   setList({
                     id: value._id,
                     text: e.target.innerText,

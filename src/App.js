@@ -14,8 +14,6 @@ import MyLists from "./components/myList";
 import MyModify from "./components/myModify";
 
 function App() {
-  window.addEventListener('click', (e)=>e.preventDefault());
-
   const [margin, setMargin] = useState("0px");
   const [lists, setLists] = useState({ status: false, data: [] });
   const [list, setList] = useState({});
