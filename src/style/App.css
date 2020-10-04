@@ -1,0 +1,16 @@
+
+.modify {
+  padding-bottom: 10px;
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  height: 50px;
+  margin: 0px;
+}
+.middle{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 80vh;
+}

@@ -12,6 +12,7 @@ import MyModal from "./components/myModal";
 import MyNav from "./components/myNav";
 import MyLists from "./components/myList";
 import MyModify from "./components/myModify";
+import "./style/App.css"
 
 function App() {
   const [margin, setMargin] = useState("0px");
