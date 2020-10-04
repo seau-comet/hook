@@ -103,7 +103,6 @@ function App() {
     });
   }, [loading.update]);
 
-  useEffect(() => {}, []);
   return (
     <div>
       <MyNav
