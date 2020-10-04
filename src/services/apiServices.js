@@ -1,59 +1,55 @@
 import axios from "axios";
-export const fetchData = async () => {
-  var res = await axios.get("https://api-hook-101.herokuapp.com/api/lists");
+
+const apiCall = async (url, method, data, id) => {
+  const res = await axios.request({
+    url: url,
+    method: method,
+    data: data,
+  });
   if (res.status !== 200) {
     return "failed";
   }
-  return res.data;
-};
-
-export const fetchOne = async (id) => {
-  var res = await axios.get(
-    `https://api-hook-101.herokuapp.com/api/list/${id}`
-  );
-  if (res.status !== 200) {
-    return "failed";
+  if (method === "DELETE") {
+    return id;
   }
+
   return res.data;
 };
 
-export const editData = async (id, text) => {
+export const fetchData = () => {
+  return apiCall("https://api-hook-101.herokuapp.com/api/lists", "GET");
+};
+
+export const fetchOne = (id) => {
+  return apiCall(`https://api-hook-101.herokuapp.com/api/list/${id}`, "GET");
+};
+
+export const editData = async (id, name) => {
   let myObj = {
-    name: text,
+    name: name,
     address: Date(),
   };
-  var res = await axios.patch(
+
+  return apiCall(
     `https://api-hook-101.herokuapp.com/api/edit/${id}`,
+    "PATCH",
     myObj
   );
-  if (res.status !== 200) {
-    return "failed";
-  }
-  return myObj;
 };
-// `https://api-hook-101.herokuapp.com/api/delete/${id}`
 
 export const deleteData = async (id) => {
-  var res = await axios.delete(
-    `https://api-hook-101.herokuapp.com/api/delete/${id}`
+  return apiCall(
+    `https://api-hook-101.herokuapp.com/api/delete/${id}`,
+    "DELETE",
+    null,
+    id
   );
-  if (res.status === 200) {
-    return id;
-  } else {
-    return "failed";
-  }
 };
-export const addData = async (text) => {
+export const addData = async (name) => {
   let myObj = {
-    name: text,
+    name: name,
     address: Date(),
   };
-  var res = await axios.post(
-    `https://api-hook-101.herokuapp.com/api/add`,
-    myObj
-  );
-  if (res.status !== 200) {
-    return "failed";
-  }
-  return res.data;
+
+  return apiCall(`https://api-hook-101.herokuapp.com/api/add`, "POST", myObj);
 };

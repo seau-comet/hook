@@ -16,6 +16,8 @@ import MyModify from "./components/myModify";
 import "./style/App.css";
 
 function App() {
+  window.addEventListener('click', (e)=>e.preventDefault());
+
   const [margin, setMargin] = useState("0px");
   const [lists, setLists] = useState({ status: false, data: [] });
   const [list, setList] = useState({});
@@ -37,8 +39,7 @@ function App() {
     setOverlay({ modal: !overlay.modal });
   };
 
-  const checkNote = async (e) => {
-    e.preventDefault();
+  const checkNote = async () => {
     setLoading({ ...loading, cancel: true });
     var response = await fetchOne(list.id);
     if (response !== "failed") {
@@ -54,16 +55,16 @@ function App() {
     setLoading(start);
     var response = await api;
     if (response !== "failed") {
-      setLoading(end);
       if (update !== false) {
         setLoading({ ...loading, update: response });
       }
+
+      setLoading(end);
       setOverlay(overlay);
     }
   };
 
-  const editList = async (e) => {
-    e.preventDefault();
+  const editList = async () => {
     baseList(
       { ...loading, edit: true },
       { ...loading, edit: false },
@@ -73,8 +74,7 @@ function App() {
     );
   };
 
-  const deleteList = async (e) => {
-    e.preventDefault();
+  const deleteList = async () => {
     baseList(
       { ...loading, delete: true },
       { ...loading, delete: false },
@@ -84,8 +84,7 @@ function App() {
     );
   };
 
-  const addList = async (e) => {
-    e.preventDefault();
+  const addList = async () => {
     baseList(
       { ...loading, add: true },
       { ...loading, add: false },
@@ -107,6 +106,7 @@ function App() {
     });
   }, [loading.update]);
 
+  useEffect(() => {}, []);
   return (
     <div>
       <MyNav

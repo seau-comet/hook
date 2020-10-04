@@ -12,18 +12,16 @@ function myModify({
   return (
     <div>
       {modify ? (
-        <div style={{ backgroundColor: "gray" }}>
-          <div className="bg.dark row justify-content-center modify">
-            <div className="col-5">
-              <Button color="danger" block onClick={deleteList}>
-                {loadingDelete ? <MySpinner /> : <div>Delete</div>}
-              </Button>
-            </div>
-            <div className="col-5">
-              <Button color="primary" block onClick={editList}>
-                {loadingEdit ? <MySpinner /> : "Edit"}
-              </Button>
-            </div>
+        <div className="bg.dark row justify-content-around fixed-bottom mb-1">
+          <div className="col-5">
+            <Button color="danger" block onClick={deleteList}>
+              {loadingDelete ? <MySpinner /> : <div>Delete</div>}
+            </Button>
+          </div>
+          <div className="col-5">
+            <Button color="primary" block onClick={editList}>
+              {loadingEdit ? <MySpinner /> : "Edit"}
+            </Button>
           </div>
         </div>
       ) : null}
