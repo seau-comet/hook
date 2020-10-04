@@ -13,8 +13,6 @@ import MyNav from "./components/myNav";
 import MyLists from "./components/myList";
 import MyModify from "./components/myModify";
 
-import "./style/App.css";
-
 function App() {
   window.addEventListener('click', (e)=>e.preventDefault());
 
